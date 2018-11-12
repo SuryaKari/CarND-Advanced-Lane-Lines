@@ -40,14 +40,14 @@ The code for this step is contained within the first 3 code cells of the IPython
 A number of images of chessboards, taken from different angles and viewpoints are used as inputs to the OpenCV functions 
 `findChessboardCorners` and `calibrateCamera`. The idea here is that, we can use the outputs from `findChessboardCorners` function, which maps the internal chessboard corners to image points, as input into the `calibrateCamera` function. This gives us the camera calibration and distortion coefficients. We can now use the OpenCV function `Undistort` to undo the effects of distortion on any image
 
-![Camera Calibration][output_images/Camera_Calibration.png]
+![Camera Calibration](output_images/Camera_Calibration.png)
 
 ### Pipeline (single images)
 
 #### 1. Provide an example of a distortion-corrected image.
 
 The effects of applying `undistort` function are subtle but we can see that the image has changed, by looking at the image of the hood. 
-![Undistorted_Road][output_images/Camera_Calibration_Road.png]
+![Undistorted_Road](output_images/Camera_Calibration_Road.png)
 
 #### 2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
 
@@ -69,7 +69,7 @@ Color Transforms
 
 Here's an example of my output for this step.
 
-![Thresholded Binary Image][output_images/Thresholded_Binary_Road.png]
+![Thresholded Binary Image](output_images/Thresholded_Binary_Road.png)
 
 #### 3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
 
@@ -100,33 +100,43 @@ I verified that my perspective transform was working as expected by drawing the 
 
 Using the perspective transformed image, we see that the first half of the perspective warped image is likely to have the lane lines. It is shown below
 
-![First Half of the Transformed Image][output_images/IdentifyLanes1.png]
+![First Half of the Transformed Image](output_images/IdentifyLanes1.png)
 
 We then use the image above, and we take the sum of all values in each row. This gives us the sum of concentration of pixels in each row
 
 We see that the peak in the first half is the left lane and the second half is the right lane. 
 
-![Histogram Output][output_images/IdentifyLanes2.png]
+![Histogram Output](output_images/IdentifyLanes2.png)
 
 I then used the sliding window search using the output from the histogram as the starting position of my right and left lanes. I then used 10 windows, 100 pixels width each. 
 
 The x and y coordinates of all non zero pixels were found and a polynomial was fit. Using this, the lane lines were drawn. 
 
-![Sliding Window][output_images/IdentifyLanes3.png]
+![Sliding Window](output_images/IdentifyLanes3.png)
 
 I then searched around previously detected lanelines. This was because, consecutive frames are likely to have lane lines in similar places. Using a margin of 50 pixels, we search the previously detected lane lines. 
 
-![Search Previous][output_images/IdentifyLanes4.png]
+![Search Previous](output_images/IdentifyLanes4.png)
+
 
 #### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
-I did this in lines # through # in my code in `my_other_file.py`
+
+The radius of curvature and the center offset are calculated in the function `measure_roc_co` at the begining of the Final Pipeline setup. 
+
+We use the classroom material for the formula of radius of curvature. The idea is that, we have to calculate the radius of curvature in meters while we perform the polynomial fit in pixels. Hence, we have to use a pixel to meter conversion
+
+* The center of the image gives us the position of the car
+* The mean of the pixels closest to the car gives us the center of the lane
+* The difference between these two will give us the offset from the center
 
 #### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
-I implemented this step in lines # through # in my code in `yet_another_file.py` in the function `map_lane()`.  Here is an example of my result on a test image:
+Once we have identified the lane lines , the radius of curvature and the center offset,  it was time to project the measurement on to the original image. The final version of the image example is below
 
-![alt text][image6]
+
+![Final Image](output_images/Final_Image.png)
+
 
 ---
 
